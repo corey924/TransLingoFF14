@@ -1,0 +1,82 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+.env
+.env.*
+.venv
+
+# Virtual environment
+myenv/
+
+# Pyre type checker
+.pyre/
+
+# Translations
+*.mo
+*.pot
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Cython debug symbols
+cython_debug/
+
+# VSCode settings
+.vscode/
+
+# Data files
+data/languages/en
+data/languages/jp
+data/languages/tw
+data/languages/merged.csv
+
+# Model checkpoints
+models/trained_model/
+
+# Output files
+output/
