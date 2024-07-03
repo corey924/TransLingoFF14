@@ -22,6 +22,11 @@ def process_chunk(chunk):
 
 
 def train_chunk(dataset, model, tokenizer, training_args, checkpoint_dir):
+    # 檢查數據集的大小，確保有足夠的樣本進行訓練和驗證
+    if len(dataset) < 5:
+        print(f"Skipping chunk with {len(dataset)} samples due to insufficient data")
+        return
+
     # 拆分數據集為訓練集和驗證集
     train_test_split = dataset.train_test_split(test_size=0.2)
     datasets = DatasetDict({'train': train_test_split['train'], 'test': train_test_split['test']})

@@ -1,12 +1,25 @@
 import zipfile
 import pandas as pd
 import os
-
+import re
 
 def extract_files(zip_path, extract_path):
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_path)
 
+def clean_text(text):
+    if not isinstance(text, str):
+        text = str(text)
+    text = re.sub(r'<.*?>', '', text)  # 移除HTML標記
+    text = re.sub(r'\[.*?\]', '', text)  # 移除中括號內的內容
+    text = re.sub(r'\(.*?\)', '', text)  # 移除括號內的內容
+    text = re.sub(r'ObjectParameter\(\d+\)', '', text)  # 移除 ObjectParameter
+    text = re.sub(r'([a-z])([A-Z])', r'\1 \2', text)  # 在小寫字母和大寫字母之間添加空格
+    text = re.sub(r'\s+', ' ', text)  # 移除多餘的空格
+    text = re.sub(r'nan', '', text)  # 移除 'nan'
+    text = re.sub(r'[^\w\s]', '', text)  # 移除所有非字母數字和空格字符
+    text = text.strip()  # 去除首尾空白字符
+    return text
 
 def read_csv_files(directory):
     dataframes = []
@@ -20,19 +33,20 @@ def read_csv_files(directory):
                     df.insert(0, 'ID', range(1, 1 + len(df)))
                     # 忽略前兩行
                     df = df.drop([0, 1])
+                    # 清洗數據
+                    for col in df.columns:
+                        df[col] = df[col].map(clean_text)
                     dataframes.append(df)
                     print(f"Successfully read {file_path} with {len(df)} rows")
                 except Exception as e:
                     print(f"Error reading {file_path}: {e}")
     return dataframes
 
-
 def ensure_columns(df, column_names):
     for col in column_names:
         if col not in df.columns:
             df[col] = ''
     return df[column_names]
-
 
 def merge_translation_files(jp_dfs, en_dfs, tw_dfs, batch_size=10):
     batch_count = 0
@@ -70,6 +84,9 @@ def merge_translation_files(jp_dfs, en_dfs, tw_dfs, batch_size=10):
                     merged_df = jp_df.merge(en_df, on='ID').merge(tw_df, on='ID', how='left')
                     valid_rows = merged_df.dropna(subset=['jp_text1', 'en_text1'])
 
+                    # 移除無效數據
+                    valid_rows = valid_rows[(valid_rows['jp_text1'] != '') & (valid_rows['en_text1'] != '')]
+
                     if not valid_rows.empty:
                         valid_rows.to_csv(output_file, index=False, header=batch_count == 0, encoding='utf-8-sig',
                                           mode='a')
@@ -81,7 +98,6 @@ def merge_translation_files(jp_dfs, en_dfs, tw_dfs, batch_size=10):
 
     return batch_count
 
-
 def concatenate_batches(batch_count):
     all_batch_dfs = []
     for i in range(batch_count):
@@ -92,7 +108,6 @@ def concatenate_batches(batch_count):
         return all_df
     else:
         return pd.DataFrame()  # 返回空的DataFrame
-
 
 # 示例使用
 if __name__ == "__main__":

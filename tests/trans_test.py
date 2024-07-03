@@ -18,7 +18,7 @@ def translate(jp_text, en_text):
         print(f"Combined text: {text}")  # 調試信息：輸入的日文和英文結合後的文本
         inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(device)
         print(f"Tokenized inputs: {inputs}")  # 調試信息：分詞後的輸入
-        translated = model.generate(**inputs)
+        translated = model.generate(**inputs, max_length=128, num_beams=4, early_stopping=True)
         print(f"Translated tokens: {translated}")  # 調試信息：翻譯後的標記
         translation = tokenizer.batch_decode(translated, skip_special_tokens=True)
         print(f"Decoded translation: {translation}")  # 調試信息：解碼後的翻譯
@@ -36,10 +36,9 @@ print(f"Translation: {translation}")
 
 # 添加更多的測試例子
 test_cases = [
-    ("おはようございます", "Good morning"),
-    ("さようなら", "Goodbye"),
-    ("ありがとう", "Thank you"),
-    ("すみません", "Excuse me"),
+    ("アルフィノ", "Alphinaud"),
+    ("アリゼー", "Alisaie"),
+    ("ヤ・シュトラ", "Y'shtola"),
     ("はい", "Yes"),
     ("いいえ", "No")
 ]
