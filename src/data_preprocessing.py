@@ -3,9 +3,11 @@ import pandas as pd
 import os
 import re
 
+
 def extract_files(zip_path, extract_path):
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_path)
+
 
 def clean_text(text):
     if not isinstance(text, str):
@@ -20,6 +22,7 @@ def clean_text(text):
     text = re.sub(r'[^\w\s]', '', text)  # 移除所有非字母數字和空格字符
     text = text.strip()  # 去除首尾空白字符
     return text
+
 
 def read_csv_files(directory):
     dataframes = []
@@ -42,11 +45,13 @@ def read_csv_files(directory):
                     print(f"Error reading {file_path}: {e}")
     return dataframes
 
+
 def ensure_columns(df, column_names):
     for col in column_names:
         if col not in df.columns:
             df[col] = ''
     return df[column_names]
+
 
 def merge_translation_files(jp_dfs, en_dfs, tw_dfs, batch_size=10):
     batch_count = 0
@@ -98,6 +103,7 @@ def merge_translation_files(jp_dfs, en_dfs, tw_dfs, batch_size=10):
 
     return batch_count
 
+
 def concatenate_batches(batch_count):
     all_batch_dfs = []
     for i in range(batch_count):
@@ -108,6 +114,7 @@ def concatenate_batches(batch_count):
         return all_df
     else:
         return pd.DataFrame()  # 返回空的DataFrame
+
 
 # 示例使用
 if __name__ == "__main__":
